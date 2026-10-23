@@ -51,6 +51,13 @@ describe('CreateRelationshipTypeController integration', () => {
     expect(relationtypes).toContainEqual(expect.objectContaining({ name: 'Created Type' }));
   });
 
+  it('should return a client error when the relationship type name already exists', async () => {
+    const response = await request(app).post('/api/relationtypes').send({ name: ' existing ' });
+
+    expect(response).toHaveStatus(400);
+    expect(response.body.error).toBe('duplicated_entry');
+  });
+
   it('should return 422 for invalid payload', async () => {
     const response = await request(app).post('/api/relationtypes').send({ _id: 7, name: false });
     expect(response).toHaveStatus(422);

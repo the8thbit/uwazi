@@ -11,6 +11,7 @@ import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationE
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
+import { DuplicatedRelationshipTypeError } from '#api/core/domain/relationshipType/errors.js';
 import {
   AccountLocked,
   InvalidCredentials,
@@ -346,6 +347,18 @@ describe('handleError', () => {
       logLevel: 'debug',
       prettyMessage: '\nTest error',
     });
+  });
+
+  it('should treat a duplicated relationship type as an expected client error', () => {
+    const result = handleError(new DuplicatedRelationshipTypeError());
+
+    expect(result).toMatchObject({
+      code: 400,
+      message: 'duplicated_entry',
+      logLevel: 'debug',
+    });
+    expect(legacyLogger.debug).toHaveBeenCalled();
+    expect(legacyLogger.error).not.toHaveBeenCalled();
   });
 
   describe('failed authentication', () => {

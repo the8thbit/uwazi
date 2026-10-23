@@ -10,7 +10,10 @@ const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
-  relationtypes: [{ _id: factory.id('rel1'), name: 'Type 1' }],
+  relationtypes: [
+    { _id: factory.id('rel1'), name: 'Type 1' },
+    { _id: factory.id('rel2'), name: 'Type 2' },
+  ],
 };
 
 const updateRoute = (app: Application) => {
@@ -54,6 +57,18 @@ describe('UpdateRelationshipTypeController integration', () => {
 
     const relationtypes = await testingEnvironment.db.getAllFrom('relationtypes');
     expect(relationtypes).toContainEqual(expect.objectContaining({ name: 'Type 1 Updated' }));
+  });
+
+  it('should return a client error when the new relationship type name already exists', async () => {
+    const response = await request(app)
+      .post('/api/relationtypes')
+      .send({
+        _id: factory.id('rel1').toHexString(),
+        name: 'Type 2',
+      });
+
+    expect(response).toHaveStatus(400);
+    expect(response.body.error).toBe('duplicated_entry');
   });
 
   it('should return 422 for invalid payload', async () => {

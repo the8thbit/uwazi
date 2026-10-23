@@ -2,6 +2,7 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { RelationshipType } from '../domain/relationshipType/RelationshipType.js';
 import { RelationshipTypesDataSource } from './contracts/RelationshipTypesDataSource.js';
 import { RelationshipTypeTranslationService } from '../domain/relationshipType/RelationshipTypeTranslationService.js';
+import { DuplicatedRelationshipTypeError } from '../domain/relationshipType/errors.js';
 
 type Input = {
   name: string;
@@ -18,7 +19,7 @@ class CreateRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps>
   async execute(input: Input): Promise<Output> {
     const duplicated = await this.deps.relationshipTypesDS.existsByName(input.name);
     if (duplicated) {
-      throw new Error('duplicated_entry');
+      throw new DuplicatedRelationshipTypeError();
     }
 
     const relationshipType = new RelationshipType(this.idGenerator.generate(), input.name);

@@ -2,6 +2,7 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { RelationshipType } from '../domain/relationshipType/RelationshipType.js';
 import { RelationshipTypesDataSource } from './contracts/RelationshipTypesDataSource.js';
 import { RelationshipTypeTranslationService } from '../domain/relationshipType/RelationshipTypeTranslationService.js';
+import { DuplicatedRelationshipTypeError } from '../domain/relationshipType/errors.js';
 
 type Input = {
   id: string;
@@ -24,7 +25,7 @@ class UpdateRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps>
 
     const duplicated = await this.deps.relationshipTypesDS.existsByName(input.name, input.id);
     if (duplicated) {
-      throw new Error('duplicated_entry');
+      throw new DuplicatedRelationshipTypeError();
     }
 
     const updated = new RelationshipType(input.id, input.name);
