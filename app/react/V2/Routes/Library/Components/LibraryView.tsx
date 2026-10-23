@@ -11,6 +11,7 @@ import { librarySidePanes } from './LibrarySidePanes.js';
 import { useLibraryCardDisplay, useLibraryTableDisplay } from './useLibraryDisplay.js';
 import { useLibraryPaneRequest } from './useLibraryMobilePane.js';
 import { useLibraryResultsChrome } from './useLibraryResultsChrome.js';
+import { useLibraryResultsState } from './useLibraryResultsState.js';
 import { useLibraryCreateActions, useLibrarySelectionChrome } from './useLibraryViewChrome.js';
 import { useLibraryResultSelection } from './useLibraryResultSelection.js';
 
@@ -66,13 +67,13 @@ const LibraryView = ({
     onToggleTableColumn,
     onTableDensityChange,
   } = useLibraryTableDisplay(filters.type ?? []);
-  const orderedIds = useMemo(() => rows.map(row => row.sharedId), [rows]);
-  const { selectEntity, selectCluster, addEntity, clear } = useLibraryResultSelection({
-    orderedIds,
-    selectedIds,
-    onSelectedIdsChange,
-    allowRange: view !== 'map',
-  });
+  const orderedIds = useMemo(() => rows.map(row => row.sharedId), [rows]),
+    { selectEntity, selectCluster, addEntity, clear } = useLibraryResultSelection({
+      orderedIds,
+      selectedIds,
+      onSelectedIdsChange,
+      allowRange: view !== 'map',
+    });
   const dismissSelection = () => {
     clear();
     onClosePreview();
@@ -118,6 +119,7 @@ const LibraryView = ({
       openResults,
       clearSelection: clear,
     });
+  const resultsState = useLibraryResultsState(confirmedSearch.trim());
 
   return (
     <div
@@ -263,6 +265,7 @@ const LibraryView = ({
           onEditSelection: startEdit,
           onCancelEditSelection: stopEdit,
           search: confirmedSearch,
+          resultsState,
           paneTab,
           onPaneTabChange: setPaneTab,
           onFocusProperty: selectProperty,

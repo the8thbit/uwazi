@@ -5,6 +5,8 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { LibraryView } from '../LibraryView.js';
 
+const mockReact = React;
+
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   t: (_context: string, key: string) => key,
@@ -37,7 +39,29 @@ jest.mock('../LibraryFilters', () => ({
 }));
 
 jest.mock('../LibraryResultsPanel', () => ({
-  LibraryResultsPanel: ({ search }: { search: string }) => <div>results body {search}</div>,
+  LibraryResultsPanel: ({
+    search,
+    resultsState,
+  }: {
+    search: string;
+    resultsState?: {
+      layout: 'grouped' | 'passages';
+      setLayout: (layout: 'grouped' | 'passages') => void;
+    };
+  }) => {
+    const [fallbackLayout, setFallbackLayout] = mockReact.useState('grouped');
+    const layout = resultsState?.layout ?? fallbackLayout;
+    const setLayout = resultsState?.setLayout ?? setFallbackLayout;
+    return (
+      <div>
+        <span>results body {search}</span>
+        <span data-testid="results-layout">{layout}</span>
+        <button type="button" onClick={() => setLayout('passages')}>
+          show passages
+        </button>
+      </div>
+    );
+  },
 }));
 
 jest.mock('../LibraryEntityPreview', () => ({
@@ -179,5 +203,17 @@ describe('LibraryView results tab', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'submit search' }));
     expect(onSelectedIdsChange).toHaveBeenCalledWith([]);
+  });
+
+  it('preserves result controls while previewing an entity', () => {
+    const { rerender } = render(<Harness committedSearch="egg" />);
+    fireEvent.click(screen.getByRole('button', { name: 'show passages' }));
+    expect(screen.getByTestId('results-layout')).toHaveTextContent('passages');
+
+    rerender(<Harness committedSearch="egg" selectedIds={['entity-1']} />);
+    expect(screen.getByText('entity preview')).toBeInTheDocument();
+
+    rerender(<Harness committedSearch="egg" />);
+    expect(screen.getByTestId('results-layout')).toHaveTextContent('passages');
   });
 });

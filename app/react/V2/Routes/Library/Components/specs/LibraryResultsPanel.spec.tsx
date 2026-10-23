@@ -9,6 +9,7 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { LibraryResultsPanel } from '../LibraryResultsPanel.js';
+import { useLibraryResultsState } from '../useLibraryResultsState.js';
 
 jest.mock('#UI/Icon/Icon.js', () => ({
   Icon: ({ icon }: { icon: string }) => <span data-testid="fa-icon">{icon}</span>,
@@ -47,15 +48,22 @@ const renderPanel = (search = 'test', rows: LibrarySearchHit[] = [row()]) => {
   const onFocusProperty = jest.fn();
   const onSelect = jest.fn();
   const onClearSearch = jest.fn();
-  render(
-    <TestAtomStoreProvider initialValues={[[templatesAtom, templates]]}>
+  const Harness = () => {
+    const resultsState = useLibraryResultsState(search.trim());
+    return (
       <LibraryResultsPanel
         search={search}
         rows={rows}
+        resultsState={resultsState}
         onFocusProperty={onFocusProperty}
         onSelect={onSelect}
         onClearSearch={onClearSearch}
       />
+    );
+  };
+  render(
+    <TestAtomStoreProvider initialValues={[[templatesAtom, templates]]}>
+      <Harness />
     </TestAtomStoreProvider>
   );
   return { onFocusProperty, onSelect, onClearSearch };

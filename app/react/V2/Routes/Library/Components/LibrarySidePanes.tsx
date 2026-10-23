@@ -57,6 +57,7 @@ const libraryRightPaneElement = (pane: LibraryRightPaneProps, onClosePreview: ()
     onEditSelection={pane.onEditSelection}
     onCancelEditSelection={pane.onCancelEditSelection}
     search={pane.search}
+    resultsState={pane.resultsState}
     paneTab={pane.paneTab}
     onPaneTabChange={pane.onPaneTabChange}
     onFocusProperty={pane.onFocusProperty}
@@ -99,6 +100,7 @@ const librarySidePanes = ({
         <LibraryResultsPanel
           search={pane.search}
           rows={pane.rows}
+          resultsState={pane.resultsState}
           onFocusProperty={pane.onFocusProperty}
           onSelect={pane.onSelectResult}
           onClearSearch={pane.onClearSearch}

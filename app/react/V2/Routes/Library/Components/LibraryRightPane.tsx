@@ -10,6 +10,7 @@ import { LibraryResultsPanel } from './LibraryResultsPanel.js';
 import { LibrarySelectionPanel } from './LibrarySelectionPanel.js';
 import { libraryResultViews } from './libraryResultSnippets.js';
 import type { LibraryBulkAction } from './librarySelectionActions.js';
+import type { LibraryResultsState } from './useLibraryResultsState.js';
 
 type LibraryRightPaneProps = {
   creating: boolean;
@@ -34,6 +35,7 @@ type LibraryRightPaneProps = {
   onEditSelection?: () => void;
   onCancelEditSelection?: () => void;
   search: string;
+  resultsState: LibraryResultsState;
   paneTab: 'filters' | 'results';
   onPaneTabChange: (tab: 'filters' | 'results') => void;
   onFocusProperty: (sharedId: string, fieldKey: string) => void;
@@ -64,6 +66,7 @@ const LibraryRightPane = ({
   onEditSelection,
   onCancelEditSelection,
   search,
+  resultsState,
   paneTab,
   onPaneTabChange,
   onFocusProperty,
@@ -116,6 +119,7 @@ const LibraryRightPane = ({
           <LibraryResultsPanel
             search={search}
             rows={rows}
+            resultsState={resultsState}
             onFocusProperty={onFocusProperty}
             onSelect={onSelectResult}
             onClearSearch={onClearSearch}

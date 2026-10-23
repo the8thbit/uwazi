@@ -43,6 +43,8 @@ const useLibraryResultsState = (search: string) => {
   };
 };
 
+type LibraryResultsState = ReturnType<typeof useLibraryResultsState>;
+
 const canFoldResults = ({
   layout,
   trimmed,
@@ -67,5 +69,5 @@ const canFoldResults = ({
   };
 };
 
-export type { ResultsLayout };
+export type { LibraryResultsState, ResultsLayout };
 export { canFoldResults, useLibraryResultsState };

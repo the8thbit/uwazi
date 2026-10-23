@@ -12,20 +12,18 @@ import {
   matchTypeCounts,
   visibleLibraryResults,
 } from './libraryResultSnippets.js';
-import { canFoldResults, useLibraryResultsState } from './useLibraryResultsState.js';
+import { canFoldResults, type LibraryResultsState } from './useLibraryResultsState.js';
 
 type LibraryResultsPanelProps = {
   search: string;
   rows: readonly LibrarySearchHit[];
+  resultsState: LibraryResultsState;
   onFocusProperty: (sharedId: string, fieldKey: string) => void;
   onSelect: (sharedId: string) => void;
   onClearSearch: () => void;
 };
 
-const summarize = (
-  rows: readonly LibrarySearchHit[],
-  active: ReturnType<typeof useLibraryResultsState>['active']
-) => {
+const summarize = (rows: readonly LibrarySearchHit[], active: LibraryResultsState['active']) => {
   const views = libraryResultViews(rows);
   const visible = visibleLibraryResults(views, active);
   return {
@@ -52,13 +50,13 @@ const resultsMode = (trimmed: string, viewCount: number) => {
 const LibraryResultsPanel = ({
   search,
   rows,
+  resultsState: state,
   onFocusProperty,
   onSelect,
   onClearSearch,
 }: LibraryResultsPanelProps) => {
   const templates = useAtomValue(templatesAtom) as ClientTemplateSchema[];
   const trimmed = search.trim();
-  const state = useLibraryResultsState(trimmed);
   const summary = summarize(rows, state.active);
   const fold = canFoldResults({
     layout: state.layout,
